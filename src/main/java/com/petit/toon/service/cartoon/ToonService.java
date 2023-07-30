@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,9 +41,12 @@ public class ToonService {
 
         toonRepository.save(cartoon);
 
-        List<Image> images = imageService.storeImages(input.getToonImages(), cartoon, toonDirectory);
+        List<MultipartFile> toonImages = input.getToonImages();
+        List<Image> images = imageService.storeImages(toonImages, cartoon, toonDirectory);
         cartoon.setImages(images);
 
+        String thumbnailPath = imageService.makeThumbnail(toonImages.get(0), cartoon, toonDirectory);
+        cartoon.setThumbnailPath(thumbnailPath);
         toonRepository.save(cartoon);
 
         return new ToonUploadResponse(cartoon.getId());
