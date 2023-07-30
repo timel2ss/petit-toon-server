@@ -5,8 +5,8 @@ import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.ToonRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
-import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
+import com.petit.toon.service.cartoon.request.ToonUploadServiceRequest;
+import com.petit.toon.service.cartoon.response.ToonUploadResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +26,7 @@ public class ToonService {
     @Value("${app.toon.dir}")
     private String toonDirectory;
 
-    public ToonUploadOutput save(ToonUploadInput input) throws IOException {
+    public ToonUploadResponse save(ToonUploadServiceRequest input) throws IOException {
         Long userId = input.getUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
@@ -45,7 +45,7 @@ public class ToonService {
 
         toonRepository.save(cartoon);
 
-        return new ToonUploadOutput(cartoon.getId());
+        return new ToonUploadResponse(cartoon.getId());
     }
 
     public void delete(Long toonId) {
