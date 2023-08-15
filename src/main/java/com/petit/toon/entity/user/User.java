@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -35,6 +37,14 @@ public class User {
 
     private String statusMessage;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_authorities",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id")
+    )
+    private Set<Authority> authorities = new HashSet<>();
+
     @CreationTimestamp
     private LocalDateTime createdDateTime;
 
@@ -53,5 +63,9 @@ public class User {
 
     public void setProfileImage(ProfileImage profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public void assignAuthority(Authority authority) {
+        authorities.add(authority);
     }
 }
