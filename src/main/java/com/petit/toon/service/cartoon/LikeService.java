@@ -1,5 +1,6 @@
 package com.petit.toon.service.cartoon;
 
+import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.repository.cartoon.DislikeRepository;
 import com.petit.toon.repository.cartoon.LikeRepository;
 import com.petit.toon.util.RedisUtil;
@@ -49,6 +50,27 @@ public class LikeService {
         addData(keys.dislikeKey, userId);
     }
 
+    public long count(long toonId) {
+        String likeKey = LIKE_KEY_PREFIX + toonId;
+        if (!redisUtil.hasKey(likeKey)) {
+            loadLikesFromDB(likeKey, toonId);
+        }
+        return redisUtil.countBits(likeKey);
+    }
+
+    public LikeStatus isLiked(long userId, long toonId) {
+        EmotionKeys keys = generateKeys(toonId);
+        loadDataUnlessCached(keys, toonId);
+
+        if (redisUtil.getBit(keys.likeKey, userId)) {
+            return LikeStatus.LIKE;
+        }
+        if (redisUtil.getBit(keys.dislikeKey, userId)) {
+            return LikeStatus.DISLIKE;
+        }
+        return LikeStatus.NONE;
+    }
+
     private EmotionKeys generateKeys(long toonId) {
         String likeKey = LIKE_KEY_PREFIX + toonId;
         String dislikeKey = DISLIKE_KEY_PREFIX + toonId;
@@ -56,11 +78,11 @@ public class LikeService {
     }
 
     private void loadDataUnlessCached(EmotionKeys keys, long toonId) {
-        if (!redisUtil.hasKey(keys.likeKey())) {
-            loadLikesFromDB(keys.likeKey(), toonId);
+        if (!redisUtil.hasKey(keys.likeKey)) {
+            loadLikesFromDB(keys.likeKey, toonId);
         }
-        if (!redisUtil.hasKey(keys.dislikeKey())) {
-            loadDislikesFromDB(keys.dislikeKey(), toonId);
+        if (!redisUtil.hasKey(keys.dislikeKey)) {
+            loadDislikesFromDB(keys.dislikeKey, toonId);
         }
     }
 

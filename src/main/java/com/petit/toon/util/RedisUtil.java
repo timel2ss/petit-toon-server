@@ -79,6 +79,10 @@ public class RedisUtil {
         return result;
     }
 
+    public boolean delete(String key) {
+        return redisTemplate.delete(key);
+    }
+
     public void flushAll() {
         redisTemplate.getConnectionFactory()
                 .getConnection()
