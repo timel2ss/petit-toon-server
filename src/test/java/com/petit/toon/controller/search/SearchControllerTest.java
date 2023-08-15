@@ -82,7 +82,15 @@ class SearchControllerTest extends RestDocsSupport {
                                 fieldWithPath("toons[].profileImageUrl").type(JsonFieldType.STRING)
                                         .description("작가 프로필 이미지 경로"),
                                 fieldWithPath("toons[].thumbnailUrl").type(JsonFieldType.STRING)
-                                        .description("만화 썸네일 url")
+                                        .description("만화 썸네일 url"),
+                                fieldWithPath("toons[].imagePaths").type(JsonFieldType.ARRAY)
+                                        .description("만화 이미지 경로"),
+                                fieldWithPath("toons[].viewCount").type(JsonFieldType.NUMBER)
+                                        .description("만화 조회수"),
+                                fieldWithPath("toons[].likeCount").type(JsonFieldType.NUMBER)
+                                        .description("만화 좋아요수"),
+                                fieldWithPath("toons[].likeStatus").optional().type(JsonFieldType.STRING)
+                                        .description("만화 좋아요 상태 (LIKE/DISLIKE/NONE)")
                         )
                 ));
     }
@@ -115,7 +123,8 @@ class SearchControllerTest extends RestDocsSupport {
                 .description(description)
                 .author(author)
                 .profileImageUrl("profile-image-url")
-                .thumbnailUrl("localhost:8080/static/" + id + "-0.png")
+                .thumbnailUrl("toons/" + id + "/" + id + "-thumb.png")
+                .imagePaths(List.of("toons/" + id + "/" + id + "-0.png", "toons/" + id + "/" + id + "-1.png"))
                 .build();
     }
 

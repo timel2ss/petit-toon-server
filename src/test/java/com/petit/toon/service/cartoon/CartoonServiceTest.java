@@ -1,13 +1,20 @@
 package com.petit.toon.service.cartoon;
 
 import com.petit.toon.entity.cartoon.Cartoon;
+import com.petit.toon.entity.cartoon.LikeStatus;
+import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.ImageRepository;
+import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
+import com.petit.toon.service.cartoon.response.CartoonResponse;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
+import com.petit.toon.util.RedisUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import static com.petit.toon.service.user.ProfileImageService.DEFAULT_PROFILE_IMAGE_ID;
 import static java.nio.file.Files.createDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +41,9 @@ public class CartoonServiceTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ProfileImageRepository profileImageRepository;
 
     @Autowired
     CartoonRepository cartoonRepository;
@@ -46,6 +57,9 @@ public class CartoonServiceTest {
     @Autowired
     ImageService imageService;
 
+    @Autowired
+    RedisUtil redisUtil;
+
     String absolutePath;
 
     @TempDir
@@ -58,6 +72,12 @@ public class CartoonServiceTest {
         createDirectory(Path.of(tempDir + "/toons"));
         cartoonService.setToonDirectory(tempDir + "/toons");
     }
+
+    @AfterEach
+    void tearDown() {
+        redisUtil.flushAll();
+    }
+
     @Test
     void 웹툰등록() throws IOException {
         //given
@@ -123,10 +143,56 @@ public class CartoonServiceTest {
         assertThat(cartoonRepository.findById(mockCartoon.getId())).isEmpty();
     }
 
+    @Test
+    @DisplayName("웹툰 단건 조회")
+    void findOne() {
+        // given
+        User loginUser = createUser("지훈");
+        User author = createUser("민서");
+        Cartoon cartoon = cartoonRepository.save(Cartoon.builder()
+                .title("sample-title")
+                .user(author)
+                .build());
+
+        // when
+        CartoonResponse response = cartoonService.findOne(loginUser.getId(), cartoon.getId());
+
+        // then
+        assertThat(response.getId()).isEqualTo(cartoon.getId());
+        assertThat(response.getTitle()).isEqualTo(cartoon.getTitle());
+        assertThat(response.getAuthor()).isEqualTo(author.getNickname());
+        assertThat(response.getViewCount()).isEqualTo(0);
+        assertThat(response.getLikeCount()).isEqualTo(0);
+        assertThat(response.getLikeStatus()).isEqualTo(LikeStatus.NONE.description);
+    }
+
+    @Test
+    @DisplayName("웹툰의 조회수를 1 증가시킨다")
+    void increaseViewCount() {
+        // given
+        User loginUser = createUser("지훈");
+        User author = createUser("민서");
+        Cartoon cartoon = cartoonRepository.save(Cartoon.builder()
+                .title("sample-title")
+                .user(author)
+                .build());
+
+        // when
+        cartoonService.increaseViewCount(loginUser.getId(), cartoon.getId());
+
+        // then
+        assertThat(cartoon.getViewCount()).isEqualTo(1);
+    }
+
     private User createUser(String name) {
-        return userRepository.save(
-                User.builder()
-                        .name(name)
-                        .build());
+        User user = User.builder()
+                .name(name)
+                .nickname("sample-nickname")
+                .build();
+        ProfileImage profileImage = profileImageRepository.findById(DEFAULT_PROFILE_IMAGE_ID)
+                .orElseThrow(() -> new RuntimeException("No Default Profile"));
+        user.setProfileImage(profileImage);
+        userRepository.save(user);
+        return user;
     }
 }
