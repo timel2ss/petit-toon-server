@@ -12,14 +12,6 @@ spring:
     hibernate:
       ddl-auto: none
 
-app:
-  toon:
-    dir: src/test/resources/toons
-
-  user:
-    image:
-      dir: src/test/resources/profileImages
-
 jwt:
   secret: YjZjM2QwODQwMDQ3NDVhYzQwNTFjYzFmMDI0YWQ1NmM5NDE2Njg1YThjODgwNjA4MTU0ZDI1ZTVhODZhZjk3NDVmNTk1OGUzZjliMzJmNDJjMjg4NTY0NDc1NzI5NTk3NjA4ZjBlNDhhMTk0YjUyODM5YWQyOWQ2OGQyODNiMTc=
 
@@ -48,6 +40,12 @@ spring:
     console:
       enabled: true
 
+app:
+  toon:
+    dir: src/main/resources/static/toons
+  user:
+    image:
+      dir: src/main/resources/static/profileImages
 ---
 
 spring:
@@ -66,3 +64,10 @@ spring:
   sql:
     init:
       mode: never
+
+app:
+  toon:
+    dir: src/test/resources/toons
+  user:
+    image:
+      dir: src/test/resources/profileImages

@@ -7,10 +7,10 @@ import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -46,12 +46,16 @@ public class CartoonService {
         List<Image> images = imageService.storeImages(toonImages, cartoon, toonDirectory);
         cartoon.setImages(images);
 
-        String thumbnailPath = imageService.makeThumbnail(new File(images.get(0).getPath()), cartoon, toonDirectory);
+        String thumbnailPath = imageService.makeThumbnail(new File(getThumbnailPath(images)), cartoon, toonDirectory);
 
         cartoon.setThumbnailPath(thumbnailPath);
         cartoonRepository.save(cartoon);
 
         return new CartoonUploadResponse(cartoon.getId());
+    }
+
+    private String getThumbnailPath(List<Image> images) {
+        return toonDirectory.substring(0, toonDirectory.indexOf("toons")) + images.get(0).getPath();
     }
 
     public void delete(Long toonId) {

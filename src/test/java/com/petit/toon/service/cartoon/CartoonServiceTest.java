@@ -2,12 +2,11 @@ package com.petit.toon.service.cartoon;
 
 import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.user.User;
-import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.cartoon.CartoonRepository;
+import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import static java.nio.file.Files.createDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 public class CartoonServiceTest {
 
     @Autowired
@@ -50,13 +52,13 @@ public class CartoonServiceTest {
     Path tempDir;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         String path = "src/test/resources/sample-toons";
         absolutePath = new File(path).getAbsolutePath();
-        cartoonService.setToonDirectory(String.valueOf(tempDir));
+        createDirectory(Path.of(tempDir + "/toons"));
+        cartoonService.setToonDirectory(tempDir + "/toons");
     }
     @Test
-    @Transactional
     void 웹툰등록() throws IOException {
         //given
         User user = createUser("KIM");
@@ -102,7 +104,6 @@ public class CartoonServiceTest {
     }
 
     @Test
-    @Transactional
     void 웹툰삭제() {
         //given
         User user = createUser("KIM");

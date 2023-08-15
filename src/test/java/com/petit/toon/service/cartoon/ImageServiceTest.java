@@ -3,8 +3,8 @@ package com.petit.toon.service.cartoon;
 import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.user.User;
-import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.cartoon.CartoonRepository;
+import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -42,13 +42,14 @@ public class ImageServiceTest {
     ImageService imageService;
 
     @TempDir
-    static Path tempDir;
+    Path tempDir;
     String absolutePath;
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         String path = "src/test/resources/sample-toons";
         absolutePath = new File(path).getAbsolutePath();
         System.out.println("tempDirPath = " + tempDir);
+        createDirectory(Path.of(tempDir + "/toons"));
     }
 
     @AfterEach
@@ -74,17 +75,17 @@ public class ImageServiceTest {
                 new FileInputStream(absolutePath + "/sample1.png"));
 
         //when
-        Image img1 = imageService.storeImage(file, mockCartoon, 0, String.valueOf(tempDir));
-        Image img2 = imageService.storeImage(file, mockCartoon, 1, String.valueOf(tempDir));
+        Image img1 = imageService.storeImage(file, mockCartoon, 0, tempDir + "/toons");
+        Image img2 = imageService.storeImage(file, mockCartoon, 1, tempDir + "/toons");
 
         //then
         assertThat(img1.getFileName()).isEqualTo(img1.getCartoon().getId() + "-0.png");
-        assertThat(img1.getPath()).isEqualTo(tempDir.resolve(String.valueOf(mockCartoon.getId())).resolve(img1.getCartoon().getId() + "-0.png").toString());
+        assertThat(img1.getPath()).isEqualTo("toons\\" + mockCartoon.getId() + "\\" + img1.getCartoon().getId() + "-0.png");
         assertThat(img1.getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(img1.getCartoon()).isEqualTo(mockCartoon);
 
         assertThat(img2.getFileName()).isEqualTo(img1.getCartoon().getId() + "-1.png");
-        assertThat(img2.getPath()).isEqualTo(tempDir.resolve(String.valueOf(mockCartoon.getId())).resolve(img1.getCartoon().getId() + "-1.png").toString());
+        assertThat(img2.getPath()).isEqualTo("toons\\" + mockCartoon.getId() + "\\" + img1.getCartoon().getId() + "-1.png");
         assertThat(img2.getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(img2.getCartoon()).isEqualTo(mockCartoon);
     }
@@ -97,7 +98,7 @@ public class ImageServiceTest {
     }
 
     private void createToonDirectory(Long toonId) throws IOException {
-        String absolutePath = tempDir + "/" + toonId;
+        String absolutePath = tempDir + "/toons/" + toonId;
         String toonDirectoryPath = new File(absolutePath).getAbsolutePath();
         createDirectory(Path.of(toonDirectoryPath));
     }

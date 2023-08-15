@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static java.nio.file.Files.createDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -38,16 +39,17 @@ class ProfileImageServiceTest {
     ProfileImageService profileImageService;
 
     @TempDir
-    static Path tempDir;
+    Path tempDir;
     String absolutePath;
 
     ProfileImage defaultImage;
 
     @BeforeEach
-    void setup() {
+    void setup() throws IOException {
         String path = "src/test/resources/sample-profile-images";
         absolutePath = new File(path).getAbsolutePath();
-        profileImageService.setProfileImageDirectory(String.valueOf(tempDir));
+        createDirectory(Path.of(tempDir + "/profileImages"));
+        profileImageService.setProfileImageDirectory(tempDir + "/profileImages");
         defaultImage = profileImageRepository.findById(profileImageService.DEFAULT_PROFILE_IMAGE_ID).get();
     }
 
@@ -80,14 +82,14 @@ class ProfileImageServiceTest {
 
         assertThat(profileImage1.getFileName()).isEqualTo(response1.getProfileImageId() + ".png");
         assertThat(profileImage1.getOriginFileName()).isEqualTo("sample1.png");
-        assertThat(profileImage1.getPath()).isEqualTo(tempDir.resolve(response1.getProfileImageId() + ".png").toString());
+        assertThat(profileImage1.getPath()).isEqualTo("profileImages\\" + response1.getProfileImageId() + ".png");
 
         user1 = userRepository.findUserById(user1.getId()).get(); // fetch join
         assertThat(user1.getProfileImage()).isEqualTo(profileImage1);
 
         assertThat(profileImage2.getFileName()).isEqualTo(response2.getProfileImageId() + ".png");
         assertThat(profileImage2.getOriginFileName()).isEqualTo("sample2.png");
-        assertThat(profileImage2.getPath()).isEqualTo(tempDir.resolve(response2.getProfileImageId() + ".png").toString());
+        assertThat(profileImage2.getPath()).isEqualTo("profileImages\\" + response2.getProfileImageId() + ".png");
 
         user2 = userRepository.findUserById(user2.getId()).get();
         assertThat(user2.getProfileImage()).isEqualTo(profileImage2);
