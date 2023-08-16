@@ -61,4 +61,8 @@ public class Cartoon {
     public void setThumbnailPath(String thumbnailPath) {
         this.thumbnailPath = thumbnailPath;
     }
+
+    public void increaseViewCount() {
+        viewCount++;
+    }
 }

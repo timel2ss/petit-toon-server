@@ -38,7 +38,7 @@ public class ImageService {
                 .cartoon(cartoon)
                 .fileName(storeFileName)
                 .originalFileName(originalFileName)
-                .path(storePath)
+                .path(storePath.substring(storePath.lastIndexOf("toons")))
                 .build());
     }
 
@@ -65,7 +65,7 @@ public class ImageService {
 
         BufferedImage resizeImage = Scalr.resize(inputImage, width, height);
         ImageIO.write(resizeImage, extension, thumbnailFile);
-        return thumbnailPath;
+        return thumbnailPath.substring(thumbnailPath.lastIndexOf("toons"));
     }
 
     private String createFileName(String originalFileName, long toonId, int n) {

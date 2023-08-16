@@ -62,7 +62,7 @@ public class ProfileImageService {
         String storePath = getFullPath(storeFileName, profileImageDirectory);
 
         profileImage.setFileName(storeFileName);
-        profileImage.setPath(storePath);
+        profileImage.setPath(storePath.substring(storePath.lastIndexOf("profileImages")));
 
         File profileImageFile = new File(storePath);
         BufferedImage resizeImage = Scalr.resize(inputImage, width, height);

@@ -44,6 +44,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/login").permitAll()
                                 .requestMatchers("/api/v1/signup").permitAll()
                                 .requestMatchers("/api/v1/token/reissue").permitAll()
+                                .requestMatchers("/toons/**").permitAll()
+                                .requestMatchers("/profileImages/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtVerificationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

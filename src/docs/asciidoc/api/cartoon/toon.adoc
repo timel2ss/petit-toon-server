@@ -21,3 +21,28 @@ include::{snippets}/toon-delete/path-parameters.adoc[]
 ==== HTTP Response
 
 include::{snippets}/toon-delete/http-response.adoc[]
+
+[[toon-get]]
+=== 웹툰 정보 조회
+
+==== HTTP Request
+
+include::{snippets}/toon-get/http-request.adoc[]
+include::{snippets}/toon-get/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-get/http-response.adoc[]
+include::{snippets}/toon-get/response-fields.adoc[]
+
+[[toon-view]]
+=== 웹툰 조회수 상승
+
+==== HTTP Request
+
+include::{snippets}/toon-view/http-request.adoc[]
+include::{snippets}/toon-view/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-view/http-response.adoc[]
