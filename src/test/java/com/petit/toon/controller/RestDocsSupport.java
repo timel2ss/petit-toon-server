@@ -1,6 +1,7 @@
 package com.petit.toon.controller;
 
-import com.petit.toon.util.JwtUtil;
+import com.petit.toon.security.JwtTokenProvider;
+import com.petit.toon.util.CookieUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,7 +24,10 @@ public abstract class RestDocsSupport {
     protected MockMvc mockMvc;
 
     @MockBean
-    private JwtUtil jwtUtil;
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private CookieUtil cookieUtil;
 
     @BeforeEach
     void setUp(WebApplicationContext context,
