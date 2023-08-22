@@ -77,9 +77,9 @@ public class UserController {
         for (String header : headerList) {
             String clientIp = request.getHeader(header);
             if (StringUtils.hasText(clientIp) && !clientIp.equals("unknown")) {
-                return request.getRemoteAddr();
+                return clientIp;
             }
         }
-        return null;
+        return request.getRemoteAddr();
     }
 }
