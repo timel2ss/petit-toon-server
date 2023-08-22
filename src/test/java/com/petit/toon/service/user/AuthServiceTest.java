@@ -2,12 +2,14 @@ package com.petit.toon.service.user;
 
 import com.petit.toon.entity.token.RefreshToken;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.IpAddressNotMatchException;
+import com.petit.toon.exception.badrequest.TokenNotValidException;
 import com.petit.toon.repository.token.RefreshTokenRepository;
 import com.petit.toon.security.CustomUserDetails;
+import com.petit.toon.security.JwtTokenProvider;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
-import com.petit.toon.security.JwtTokenProvider;
 import com.petit.toon.util.RedisUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -129,8 +131,8 @@ class AuthServiceTest {
 
         // when // then
         assertThatThrownBy(() -> authService.reissueToken(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("유효하지 않거나 만료된 토큰입니다.");
+                .isInstanceOf(TokenNotValidException.class)
+                .hasMessage(TokenNotValidException.MESSAGE);
     }
 
     @Test
@@ -155,7 +157,7 @@ class AuthServiceTest {
 
         // when // then
         assertThatThrownBy(() -> authService.reissueToken(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("잘못된 접근입니다. 다시 로그인하세요.");
+                .isInstanceOf(IpAddressNotMatchException.class)
+                .hasMessage(IpAddressNotMatchException.MESSAGE);
     }
 }

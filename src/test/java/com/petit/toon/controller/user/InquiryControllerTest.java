@@ -1,6 +1,7 @@
 package com.petit.toon.controller.user;
 
 import com.petit.toon.controller.RestDocsSupport;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.service.user.InquiryService;
 import com.petit.toon.service.user.response.TagExistResponse;
 import com.petit.toon.service.user.response.UserResponse;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -66,6 +68,28 @@ class InquiryControllerTest extends RestDocsSupport {
                                         .description("조회된 유저 프로필 이미지 경로"),
                                 fieldWithPath("statusMessage")
                                         .description("조회된 유저 상태메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("유저 정보 조회 API - UserNotFound")
+    void inquiry2() throws Exception {
+        // given
+        given(inquiryService.inquiryByUserId(anyLong())).willThrow(new UserNotFoundException());
+
+        // when // then
+        mockMvc.perform(get("/api/v1/user/{userId}", 99999))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value(UserNotFoundException.MESSAGE))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("exception-user-not-found",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
                         )
                 ));
     }

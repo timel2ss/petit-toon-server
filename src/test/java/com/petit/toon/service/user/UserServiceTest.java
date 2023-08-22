@@ -1,6 +1,7 @@
 package com.petit.toon.service.user;
 
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.EmailAlreadyRegisteredException;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.request.SignupServiceRequest;
 import com.petit.toon.service.user.response.SignupResponse;
@@ -66,7 +67,7 @@ class UserServiceTest {
 
         // when // then
         assertThatThrownBy(() -> userService.register(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("이미 사용 중인 이메일 주소입니다");
+                .isInstanceOf(EmailAlreadyRegisteredException.class)
+                .hasMessage(EmailAlreadyRegisteredException.MESSAGE);
     }
 }

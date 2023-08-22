@@ -4,6 +4,7 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.internalservererror.DefaultProfileImageNotExistException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.user.ProfileImageRepository;
@@ -188,7 +189,7 @@ public class CartoonServiceTest {
                 .nickname("sample-nickname")
                 .build();
         ProfileImage profileImage = profileImageRepository.findById(DEFAULT_PROFILE_IMAGE_ID)
-                .orElseThrow(() -> new RuntimeException("No Default Profile"));
+                .orElseThrow(DefaultProfileImageNotExistException::new);
         user.setProfileImage(profileImage);
         userRepository.save(user);
         return user;

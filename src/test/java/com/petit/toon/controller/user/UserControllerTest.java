@@ -5,6 +5,11 @@ import com.petit.toon.controller.RestDocsSupport;
 import com.petit.toon.controller.user.request.LoginRequest;
 import com.petit.toon.controller.user.request.ReissueRequest;
 import com.petit.toon.controller.user.request.SignupRequest;
+import com.petit.toon.exception.badrequest.EmailAlreadyRegisteredException;
+import com.petit.toon.exception.badrequest.IpAddressNotMatchException;
+import com.petit.toon.exception.badrequest.TokenNotValidException;
+import com.petit.toon.exception.internalservererror.AuthorityNotExistException;
+import com.petit.toon.exception.notfound.RefreshTokenNotFoundException;
 import com.petit.toon.service.user.AuthService;
 import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.response.AuthResponse;
@@ -26,6 +31,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserController.class)
@@ -79,6 +85,106 @@ class UserControllerTest extends RestDocsSupport {
                         responseFields(
                                 fieldWithPath("userId").type(JsonFieldType.NUMBER)
                                         .description("유저 ID")
+                        )));
+    }
+
+    @Test
+    @DisplayName("회원가입 API - EmailAlreadyRegistered")
+    void signup2() throws Exception {
+        // given
+        given(userService.register(any())).willThrow(new EmailAlreadyRegisteredException());
+
+        SignupRequest request = SignupRequest.builder()
+                .name("이미 등록된 이메일 주소")
+                .nickname("sample_nickname")
+                .tag("sample_tag")
+                .email("sample@email.com")
+                .password("!@#sAmple1234")
+                .build();
+
+        // when // then
+        mockMvc.perform(post("/api/v1/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value(EmailAlreadyRegisteredException.MESSAGE))
+                .andDo(print())
+                .andDo(document("exception-email-already-registered",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )));
+    }
+
+    @Test
+    @DisplayName("회원가입 API - ServerError")
+    void signup3() throws Exception {
+        // given
+        given(userService.register(any())).willThrow(new AuthorityNotExistException());
+
+        SignupRequest request = SignupRequest.builder()
+                .name("sample_name")
+                .nickname("sample_nickname")
+                .tag("sample_tag")
+                .email("sample@email.com")
+                .password("!@#sAmple1234")
+                .build();
+
+        // when // then
+        mockMvc.perform(post("/api/v1/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("500"))
+                .andExpect(jsonPath("$.message").value(AuthorityNotExistException.MESSAGE))
+                .andDo(print())
+                .andDo(document("exception-server-error",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )));
+    }
+
+    @Test
+    @DisplayName("회원가입 API - MethodArgumentNotValid")
+    void signup4() throws Exception {
+        // given
+        SignupRequest request = SignupRequest.builder()
+                .name("sample_name")
+                .nickname("sample_nickname")
+                .tag("sample_tag")
+                .email("이메일 형식이 아님")
+                .password("비밀번호 조건을 달성하지 못함")
+                .build();
+
+        // when // then
+        mockMvc.perform(post("/api/v1/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andDo(print())
+                .andDo(document("exception-argument-not-valid",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지"),
+                                fieldWithPath("validation").type(JsonFieldType.OBJECT)
+                                        .description("검증 에러 메시지"),
+                                fieldWithPath("validation.password").type(JsonFieldType.STRING)
+                                        .description("검증이 실패한 항목/이유"),
+                                fieldWithPath("validation.email").type(JsonFieldType.STRING)
+                                        .description("검증이 실패한 항목/이유")
                         )));
     }
 
@@ -150,6 +256,90 @@ class UserControllerTest extends RestDocsSupport {
                                         .description("access 토큰 (ttl 30분)"),
                                 fieldWithPath("refreshToken").type(JsonFieldType.STRING)
                                         .description("refresh 토큰 (ttl 7일)")
+                        )));
+    }
+
+    @Test
+    @DisplayName("토큰 재발행 API - TokenNotValid")
+    void reissue2() throws Exception {
+        // given
+        given(authService.reissueToken(any())).willThrow(new TokenNotValidException());
+
+        ReissueRequest request = ReissueRequest.builder()
+                .refreshToken("잘못된 토큰 값을 입력한 경우")
+                .build();
+
+        // when // then
+        mockMvc.perform(post("/api/v1/token/reissue")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value(TokenNotValidException.MESSAGE))
+                .andDo(print())
+                .andDo(document("exception-token-not-valid",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )));
+    }
+
+    @Test
+    @DisplayName("토큰 재발행 API - TokenNotFound")
+    void reissue3() throws Exception {
+        // given
+        given(authService.reissueToken(any())).willThrow(new RefreshTokenNotFoundException());
+
+        ReissueRequest request = ReissueRequest.builder()
+                .refreshToken("Refresh 토큰 유효 기간이 지난 경우")
+                .build();
+
+        // when // then
+        mockMvc.perform(post("/api/v1/token/reissue")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value(RefreshTokenNotFoundException.MESSAGE))
+                .andDo(print())
+                .andDo(document("exception-token-not-found",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )));
+    }
+
+    @Test
+    @DisplayName("토큰 재발행 API - IpAddressNotMatch")
+    void reissue4() throws Exception {
+        // given
+        given(authService.reissueToken(any())).willThrow(new IpAddressNotMatchException());
+
+        ReissueRequest request = ReissueRequest.builder()
+                .refreshToken("로그인 했을 때의 IP 주소와 다른 경우")
+                .build();
+
+        // when // then
+        mockMvc.perform(post("/api/v1/token/reissue")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value(IpAddressNotMatchException.MESSAGE))
+                .andDo(print())
+                .andDo(document("exception-ip-not-match",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
                         )));
     }
 }

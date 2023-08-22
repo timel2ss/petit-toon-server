@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petit.toon.controller.RestDocsSupport;
 import com.petit.toon.controller.collection.request.CollectionRequest;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.notfound.CollectionNotFoundException;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.collection.CollectionService;
 import com.petit.toon.service.collection.response.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
@@ -31,6 +34,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -109,6 +113,52 @@ class CollectionControllerTest extends RestDocsSupport {
                         responseFields(
                                 fieldWithPath("bookmarkId").type(JsonFieldType.NUMBER)
                                         .description("생성된 Bookmark ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("createBookmark - CollectionNotFound")
+    void createBookmark2() throws Exception {
+        // given
+        given(collectionService.createBookmark(anyLong(), anyLong(), anyLong())).willThrow(new CollectionNotFoundException());
+
+        // when // then
+        mockMvc.perform(post("/api/v1/collection/{collectionId}/{cartoonId}", 99999l, 1l))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value(CollectionNotFoundException.MESSAGE))
+                .andExpect(status().isNotFound())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("exception-collection-not-found",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("createBookmark - AuthorityNotMatch")
+    void createBookmark3() throws Exception {
+        // given
+        given(collectionService.createBookmark(anyLong(), anyLong(), anyLong())).willThrow(new AuthorityNotMatchException());
+
+        // when // then
+        mockMvc.perform(post("/api/v1/collection/{collectionId}/{cartoonId}", 1l, 1l))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value(AuthorityNotMatchException.MESSAGE))
+                .andExpect(status().isBadRequest())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("exception-authority-not-match",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
                         )
                 ));
     }
