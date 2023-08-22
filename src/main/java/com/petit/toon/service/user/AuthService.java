@@ -1,11 +1,14 @@
 package com.petit.toon.service.user;
 
 import com.petit.toon.entity.token.RefreshToken;
+import com.petit.toon.exception.badrequest.IpAddressNotMatchException;
+import com.petit.toon.exception.badrequest.TokenNotValidException;
+import com.petit.toon.exception.notfound.RefreshTokenNotFoundException;
 import com.petit.toon.repository.token.RefreshTokenRepository;
+import com.petit.toon.security.JwtTokenProvider;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
-import com.petit.toon.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,13 +44,13 @@ public class AuthService {
     public AuthResponse reissueToken(ReissueServiceRequest request) {
         String refreshToken = request.getRefreshToken();
         if (!(StringUtils.hasText(refreshToken) && jwtTokenProvider.validateToken(refreshToken))) {
-            throw new RuntimeException("유효하지 않거나 만료된 토큰입니다.");
+            throw new TokenNotValidException();
         }
 
         RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found in Redis Cache. token: " + refreshToken));
+                .orElseThrow(RefreshTokenNotFoundException::new);
         if (!request.getClientIp().equals(findRefreshToken.getIp())) {
-            throw new RuntimeException("잘못된 접근입니다. 다시 로그인하세요.");
+            throw new IpAddressNotMatchException();
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(jwtTokenProvider.getUsername(refreshToken));

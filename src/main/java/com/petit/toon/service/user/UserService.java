@@ -4,6 +4,9 @@ import com.petit.toon.entity.user.Authority;
 import com.petit.toon.entity.user.AuthorityType;
 import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.EmailAlreadyRegisteredException;
+import com.petit.toon.exception.internalservererror.AuthorityNotExistException;
+import com.petit.toon.exception.internalservererror.DefaultProfileImageNotExistException;
 import com.petit.toon.repository.user.AuthorityRepository;
 import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
@@ -28,14 +31,14 @@ public class UserService {
     @Transactional
     public SignupResponse register(SignupServiceRequest request) {
         if (userRepository.findOneByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("이미 사용 중인 이메일 주소입니다");
+            throw new EmailAlreadyRegisteredException();
         }
 
         Authority authority = authorityRepository.findOneByAuthorityName(AuthorityType.USER)
-                .orElseThrow(() -> new RuntimeException("Authority does not exist. Initialize data of ROLE_USER"));
+                .orElseThrow(AuthorityNotExistException::new);
 
         ProfileImage defaultProfileImage = profileImageRepository.findById(DEFAULT_PROFILE_IMAGE_ID)
-                .orElseThrow(() -> new RuntimeException("Default Profile Image not found"));
+                .orElseThrow(DefaultProfileImageNotExistException::new);
 
         User user = User.builder()
                 .name(request.getName())

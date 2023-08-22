@@ -2,6 +2,7 @@ package com.petit.toon.service.user;
 
 import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.response.FollowResponse;
@@ -26,9 +27,9 @@ public class FollowService {
     @Transactional
     public FollowResponse follow(long followerId, long followeeId) {
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + followerId));
+                .orElseThrow(UserNotFoundException::new);
         User followee = userRepository.findById(followeeId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + followeeId));
+                .orElseThrow(UserNotFoundException::new);
 
         Follow follow = Follow.builder()
                 .follower(follower)

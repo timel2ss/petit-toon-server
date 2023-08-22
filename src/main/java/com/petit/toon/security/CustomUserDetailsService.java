@@ -1,6 +1,7 @@
 package com.petit.toon.security;
 
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findOneWithAuthoritiesByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found. email: " + username));
+                .orElseThrow(UserNotFoundException::new);
         return new CustomUserDetails(user);
     }
 }
