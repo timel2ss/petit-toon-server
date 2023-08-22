@@ -45,3 +45,8 @@ include::api/user/auth.adoc[]
 == User API
 
 include::api/user/user.adoc[]
+
+[[Exception-API]]
+== Exception API
+
+include::api/exception/exception.adoc[]

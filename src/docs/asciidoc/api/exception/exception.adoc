@@ -1,0 +1,118 @@
+[[exception-400]]
+=== [400] Bad Request 예외
+
+==== 권한이 없는 사용자의 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-authority-not-match/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-authority-not-match/http-response.adoc[]
+include::{snippets}/exception-authority-not-match/response-fields.adoc[]
+
+==== 회원 가입 중복된 이메일 주소 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-email-already-registered/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-email-already-registered/http-response.adoc[]
+include::{snippets}/exception-email-already-registered/response-fields.adoc[]
+
+==== 이전 요청과 다른 IP 주소에서의 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-ip-not-match/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-ip-not-match/http-response.adoc[]
+include::{snippets}/exception-ip-not-match/response-fields.adoc[]
+
+==== 유효하지 않은 토큰으로 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-token-not-valid/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-token-not-valid/http-response.adoc[]
+include::{snippets}/exception-token-not-valid/response-fields.adoc[]
+
+==== 입력 데이터의 검증이 실패한 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-argument-not-valid/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-argument-not-valid/http-response.adoc[]
+include::{snippets}/exception-argument-not-valid/response-fields.adoc[]
+
+[[exception-404]]
+=== [404] Not Found 예외
+
+==== 존재하지 않는 웹툰에 대한 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-cartoon-not-found/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-cartoon-not-found/http-response.adoc[]
+include::{snippets}/exception-cartoon-not-found/response-fields.adoc[]
+
+==== 존재하지 않는 콜렉션에 대한 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-collection-not-found/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-collection-not-found/http-response.adoc[]
+include::{snippets}/exception-collection-not-found/response-fields.adoc[]
+
+==== 존재하지 않거나 만료된 Refresh 토큰에 대한 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-token-not-found/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-token-not-found/http-response.adoc[]
+include::{snippets}/exception-token-not-found/response-fields.adoc[]
+
+==== 존재하지 않는 사용자에 대한 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-user-not-found/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-user-not-found/http-response.adoc[]
+include::{snippets}/exception-user-not-found/response-fields.adoc[]
+
+[[exception-500]]
+=== [500] Internal Server Error 예외
+
+==== 서버 내부 에러 (커스텀 예외만 해당)
+
+==== HTTP Request
+
+include::{snippets}/exception-server-error/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-server-error/http-response.adoc[]
+include::{snippets}/exception-server-error/response-fields.adoc[]
