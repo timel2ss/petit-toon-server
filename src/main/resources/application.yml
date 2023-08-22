@@ -39,8 +39,11 @@ spring:
   h2:
     console:
       enabled: true
+      settings:
+        web-allow-others: true
 
 app:
+  resource: src/main/resources/static/
   toon:
     dir: src/main/resources/static/toons
   user:
@@ -66,6 +69,7 @@ spring:
       mode: never
 
 app:
+  resource: src/test/resources/static
   toon:
     dir: src/test/resources/toons
   user:
