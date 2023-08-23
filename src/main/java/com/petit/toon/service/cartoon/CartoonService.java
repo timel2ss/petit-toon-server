@@ -4,6 +4,8 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.CartoonNotFoundException;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
@@ -38,7 +40,7 @@ public class CartoonService {
 
     public CartoonUploadResponse save(long userId, CartoonUploadServiceRequest input) throws IOException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
+                .orElseThrow(UserNotFoundException::new);
 
         Cartoon cartoon = Cartoon.builder()
                 .user(user)
@@ -64,7 +66,7 @@ public class CartoonService {
     @Transactional(readOnly = true)
     public CartoonResponse findOne(long userId, long toonId) {
         Cartoon cartoon = cartoonRepository.findCartoonById(toonId)
-                .orElseThrow(() -> new RuntimeException("Cartoon not found. id: " + toonId));
+                .orElseThrow(CartoonNotFoundException::new);
         long likeCount = likeService.count(toonId);
         LikeStatus likeStatus = likeService.isLiked(userId, toonId);
         return CartoonResponse.of(cartoon, likeCount, likeStatus);
@@ -77,7 +79,7 @@ public class CartoonService {
         }
         redisUtil.setBit(key, userId, true, 1, TimeUnit.DAYS);
         Cartoon cartoon = cartoonRepository.findCartoonById(toonId)
-                .orElseThrow(() -> new RuntimeException("Cartoon not found. id: " + toonId));
+                .orElseThrow(CartoonNotFoundException::new);
         cartoon.increaseViewCount();
     }
 

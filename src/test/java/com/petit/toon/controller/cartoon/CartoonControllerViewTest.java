@@ -3,6 +3,7 @@ package com.petit.toon.controller.cartoon;
 import com.petit.toon.controller.RestDocsSupport;
 import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.CartoonService;
 import com.petit.toon.service.cartoon.response.CartoonResponse;
@@ -32,6 +33,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -106,6 +108,28 @@ public class CartoonControllerViewTest extends RestDocsSupport {
                                         .description("만화 좋아요수"),
                                 fieldWithPath("likeStatus").optional().type(JsonFieldType.STRING)
                                         .description("만화 좋아요 상태 (LIKE/DISLIKE/NONE)")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("웹툰 단건 조회 API - CartoonNotFound")
+    void getToon2() throws Exception {
+        // given
+        given(cartoonService.findOne(anyLong(), anyLong())).willThrow(new CartoonNotFoundException());
+
+        // when // then
+        mockMvc.perform(get("/api/v1/toon/{toonId}", 99999))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value(CartoonNotFoundException.MESSAGE))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("exception-cartoon-not-found",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
                         )
                 ));
     }

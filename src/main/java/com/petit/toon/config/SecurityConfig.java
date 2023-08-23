@@ -43,15 +43,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
+                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/resources/**").permitAll()
+                                .requestMatchers("/index.html").permitAll()
+                                .requestMatchers("/static/**").permitAll()
                                 .requestMatchers("/favicon.ico").permitAll()
+                                .requestMatchers("/asset-manifest.json").permitAll()
+                                .requestMatchers("/images/**").permitAll()
+                                .requestMatchers("/manifest.json").permitAll()
+                                .requestMatchers("/logo192.png").permitAll()
+                                .requestMatchers("/logo512.png").permitAll()
+                                .requestMatchers("/robots.txt").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/docs/*").permitAll()
+                                .requestMatchers("/toons/**").permitAll()
+                                .requestMatchers("/profileImages/**").permitAll()
                                 .requestMatchers("/api/v1/login").permitAll()
                                 .requestMatchers("/api/v1/signup").permitAll()
                                 .requestMatchers("/api/v1/token/reissue").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/user/{tag}").permitAll()
-                                .requestMatchers("/toons/**").permitAll()
-                                .requestMatchers("/profileImages/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtVerificationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

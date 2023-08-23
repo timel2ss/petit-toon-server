@@ -4,6 +4,7 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Dislike;
 import com.petit.toon.entity.cartoon.Like;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.DislikeRepository;
 import com.petit.toon.repository.cartoon.LikeRepository;
@@ -75,7 +76,7 @@ public class LikeScheduler {
 
         List<User> insertUsers = userRepository.findAllByIdIn(insertIds);
         Cartoon cartoon = cartoonRepository.findById(toonId).
-                orElseThrow(() -> new RuntimeException("toon not found. id: " + toonId));
+                orElseThrow(CartoonNotFoundException::new);
 
         if (isLike) {
             likeRepository.saveAll(createLikes(insertUsers, cartoon));

@@ -1,6 +1,7 @@
 package com.petit.toon.service.user;
 
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.response.TagExistResponse;
 import com.petit.toon.service.user.response.UserResponse;
@@ -19,7 +20,7 @@ public class InquiryService {
 
     public UserResponse inquiryByUserId(long userId) {
         User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
+                .orElseThrow(UserNotFoundException::new);
         return UserResponse.of(user);
     }
 

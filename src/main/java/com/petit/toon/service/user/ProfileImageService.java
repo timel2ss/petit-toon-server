@@ -2,6 +2,7 @@ package com.petit.toon.service.user;
 
 import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.response.ProfileImageResponse;
@@ -34,7 +35,7 @@ public class ProfileImageService {
      */
     public ProfileImageResponse upload(long userId, MultipartFile input) throws IOException {
         User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
+                .orElseThrow(UserNotFoundException::new);
 
         if (user.getProfileImage().getId() != DEFAULT_PROFILE_IMAGE_ID) {
             profileImageRepository.delete(user.getProfileImage());
@@ -84,7 +85,7 @@ public class ProfileImageService {
      */
     public void updateToDefault(long userId) {
         User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
+                .orElseThrow(UserNotFoundException::new);
 
         if (user.getProfileImage().getId() == DEFAULT_PROFILE_IMAGE_ID) {
             return;

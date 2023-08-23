@@ -1,6 +1,5 @@
 package com.petit.toon.security;
 
-import com.petit.toon.security.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -95,7 +94,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiration)
                 .compact();
 
-        log.info("create refresh token: {}, expiration; {]", token, expiration);
+        log.info("create token: {}, expiration; {]", token, expiration);
         return token;
     }
 

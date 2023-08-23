@@ -4,6 +4,10 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.collection.Bookmark;
 import com.petit.toon.entity.collection.Collection;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.notfound.CartoonNotFoundException;
+import com.petit.toon.exception.notfound.CollectionNotFoundException;
+import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.collection.BookmarkRepository;
 import com.petit.toon.repository.collection.CollectionRepository;
@@ -31,7 +35,7 @@ public class CollectionService {
      */
     public CollectionResponse createCollection(long userId, String title, boolean closed) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
+                .orElseThrow(UserNotFoundException::new);
 
         Collection savedCollection = collectionRepository.save(Collection.builder()
                 .user(user)
@@ -47,14 +51,14 @@ public class CollectionService {
      */
     public BookmarkResponse createBookmark(long userId, long collectionId, long cartoonId) {
         Collection collection = collectionRepository.findById(collectionId)
-                .orElseThrow(() -> new RuntimeException("Collection not found. id: " + collectionId));
+                .orElseThrow(CollectionNotFoundException::new);
 
         if (userId != collection.getUser().getId()) {
-            throw new RuntimeException("The user ID in the collection does not match the user ID requested.");
+            throw new AuthorityNotMatchException();
         }
 
         Cartoon cartoon = cartoonRepository.findById(cartoonId)
-                .orElseThrow(() -> new RuntimeException("Cartoon not found. id: " + cartoonId));
+                .orElseThrow(CartoonNotFoundException::new);
 
         Bookmark bookmark = bookmarkRepository.save(Bookmark.builder()
                 .collection(collection)
