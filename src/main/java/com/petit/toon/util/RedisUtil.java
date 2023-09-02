@@ -1,10 +1,7 @@
 package com.petit.toon.util;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -99,6 +96,44 @@ public class RedisUtil {
         redisTemplate.expire(key, timeout, timeUnit);
         return listOperations.rightPushAll(key, value);
     }
+
+    /**
+     * Set Redis List with elements.
+     * Just Do LeftPush in List at key, with elements.
+     * Then, trim list 0 ~ (limit-1) [Size = limit]
+     */
+    public void setListWithLimit(String key, List<Long> elements, long limit, long timeout, TimeUnit timeUnit) {
+        List<String> value = elements.stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+
+        redisTemplate.expire(key, timeout, timeUnit);
+        listOperations.leftPushAll(key, value);
+
+        // Redis List Size Limit
+        listOperations.trim(key, 0, limit - 1);
+    }
+
+    public void pushElementWithLimit(String key, long element, long limit) {
+        String value = String.valueOf(element);
+        redisTemplate.execute(new SessionCallback<Object>() {
+            @Override
+            public Object execute(RedisOperations redisOperations) {
+                long listSize = redisOperations.opsForList().size(key);
+                redisOperations.watch(key);
+                redisOperations.multi();
+
+                if (listSize == limit) {
+                    redisOperations.opsForList().rightPop(key);
+                }
+                redisOperations.opsForList().leftPush(key, value);
+
+                return redisOperations.exec();
+            }
+        });
+    }
+
 
     public List<Long> getList(String key, long start, long end) {
         ListOperations<String, String> listOperations = redisTemplate.opsForList();
