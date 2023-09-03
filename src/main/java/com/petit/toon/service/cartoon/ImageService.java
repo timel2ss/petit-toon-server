@@ -68,6 +68,29 @@ public class ImageService {
         return thumbnailPath.substring(thumbnailPath.lastIndexOf("toons"));
     }
 
+    public boolean deleteFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return false;
+        }
+        return file.delete();
+    }
+
+    public int getLastImageNumber(Cartoon cartoon) {
+        return cartoon.getImages().stream()
+                .mapToInt(this::extractImageNumber)
+                .max().getAsInt();
+    }
+
+    public String getFullPath(MultipartFile file, long cartoonId, int index, String toonDirectory) {
+        String extension = extractExtension(file.getName());
+        return toonDirectory + File.separator + cartoonId + File.separator + cartoonId + "-" + index + "." + extension;
+    }
+
+    private int extractImageNumber(Image image) {
+        return Integer.parseInt(image.getPath().split("-|\\.")[1]);
+    }
+
     private String createFileName(String originalFileName, long toonId, int n) {
         String extension = extractExtension(originalFileName);
         return toonId + "-" + n + "." + extension;
