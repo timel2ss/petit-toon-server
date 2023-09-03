@@ -26,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -166,9 +167,19 @@ class CollectionControllerTest extends RestDocsSupport {
     @Test
     void listCollection() throws Exception {
         // given
-        CollectionInfoResponse res1 = createCollectionInfo(1l, "title1", false);
-        CollectionInfoResponse res2 = createCollectionInfo(2l, "title2", false);
-        CollectionInfoResponse res3 = createCollectionInfo(3l, "title3", true);
+        String path1 = "cartoon/thumbnail-path/1";
+        String path2 = "cartoon/thumbnail-path/2";
+        String path3 = "cartoon/thumbnail-path/3";
+        String path4 = "cartoon/thumbnail-path/4";
+
+        List<String> paths1 = new ArrayList<>();
+        List<String> paths2 = List.of(path1, path2);
+        List<String> paths3 = List.of(path1, path2, path3, path4);
+
+        CollectionInfoResponse res1 = createCollectionInfo(1l, "title1", false, paths1);
+        CollectionInfoResponse res2 = createCollectionInfo(2l, "title2", false, paths2);
+        CollectionInfoResponse res3 = createCollectionInfo(3l, "title3", true, paths3);
+
         given(collectionService.viewCollectionList(anyLong(), anyBoolean(), any()))
                 .willReturn(new CollectionInfoListResponse(List.of(res1, res2, res3)));
 
@@ -194,7 +205,9 @@ class CollectionControllerTest extends RestDocsSupport {
                                 fieldWithPath("collectionInfos[].title").type(JsonFieldType.STRING)
                                         .description("Collection 제목"),
                                 fieldWithPath("collectionInfos[].closed").type(JsonFieldType.BOOLEAN)
-                                        .description("Collection 비공개 여부 (true: 비공개 | false: 공개)")
+                                        .description("Collection 비공개 여부 (true: 비공개 | false: 공개)"),
+                                fieldWithPath("collectionInfos[].thumbnailPaths").type(JsonFieldType.ARRAY)
+                                        .description("Collection의 대표 북마크 썸네일 4개")
                         )
                 ));
     }
@@ -261,11 +274,12 @@ class CollectionControllerTest extends RestDocsSupport {
                         )));
     }
 
-    private CollectionInfoResponse createCollectionInfo(long id, String title, boolean closed) {
+    private CollectionInfoResponse createCollectionInfo(long id, String title, boolean closed, List<String> thumbnailPaths) {
         return CollectionInfoResponse.builder()
                 .id(id)
                 .title(title)
                 .closed(closed)
+                .thumbnailPaths(thumbnailPaths)
                 .build();
     }
 
