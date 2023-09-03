@@ -2,9 +2,11 @@ package com.petit.toon.service.cartoon;
 
 import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Comment;
+import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.CommentRepository;
+import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.response.*;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.petit.toon.service.user.ProfileImageService.DEFAULT_PROFILE_IMAGE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -35,6 +38,9 @@ class CommentServiceTest {
 
     @Autowired
     CartoonRepository cartoonRepository;
+
+    @Autowired
+    ProfileImageRepository profileImageRepository;
 
     @Test
     @DisplayName("댓글 등록")
@@ -71,9 +77,9 @@ class CommentServiceTest {
     @DisplayName("웹툰 댓글 조회")
     void viewComments() {
         // given
-        User user1 = createUser("KIM");
-        User user2 = createUser("LEE");
-        User user3 = createUser("JIN");
+        User user1 = createUserWithProfileImage("KIM");
+        User user2 = createUserWithProfileImage("LEE");
+        User user3 = createUserWithProfileImage("JIN");
 
         Cartoon cartoon = createToon("영현이의 모험");
 
@@ -115,10 +121,11 @@ class CommentServiceTest {
     void viewOnlyMyComments() {
         // given
         User user = createUser("Petit");
+        User author = createUser("author");
 
-        Cartoon cartoon1 = createToon("toon 1");
-        Cartoon cartoon2 = createToon("toon 2");
-        Cartoon cartoon3 = createToon("toon 3");
+        Cartoon cartoon1 = createToonWithAuthor(author, "toon 1");
+        Cartoon cartoon2 = createToonWithAuthor(author, "toon 2");
+        Cartoon cartoon3 = createToonWithAuthor(author, "toon 3");
 
         Comment comment1 = createComment(user, cartoon1);
         Comment comment2 = createComment(user, cartoon2);
@@ -159,8 +166,24 @@ class CommentServiceTest {
                 .build());
     }
 
+    private User createUserWithProfileImage(String nickname) {
+        User user = userRepository.save(User.builder()
+                .nickname(nickname)
+                .build());
+        ProfileImage profileImage = profileImageRepository.findById(DEFAULT_PROFILE_IMAGE_ID).get();
+        user.setProfileImage(profileImage);
+        return userRepository.save(user);
+    }
+
     private Cartoon createToon(String title) {
         return cartoonRepository.save(Cartoon.builder()
+                .title(title)
+                .build());
+    }
+
+    private Cartoon createToonWithAuthor(User user, String title) {
+        return cartoonRepository.save(Cartoon.builder()
+                .user(user)
                 .title(title)
                 .build());
     }
