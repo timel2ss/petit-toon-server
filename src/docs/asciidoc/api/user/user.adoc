@@ -1,0 +1,38 @@
+[[user-signup]]
+=== 회원가입
+
+==== HTTP Request
+
+include::{snippets}/user-signup/http-request.adoc[]
+include::{snippets}/user-signup/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/user-signup/http-response.adoc[]
+include::{snippets}/user-signup/response-fields.adoc[]
+
+[[user-inquiry]]
+=== 유저 정보 조회
+
+==== HTTP Request
+
+include::{snippets}/user-inquiry/http-request.adoc[]
+include::{snippets}/user-inquiry/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/user-inquiry/http-response.adoc[]
+include::{snippets}/user-inquiry/response-fields.adoc[]
+
+[[user-tag-duplication-check]]
+=== 유저 태그 중복 검사
+
+==== HTTP Request
+
+include::{snippets}/tag-duplication-check/http-request.adoc[]
+include::{snippets}/tag-duplication-check/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/tag-duplication-check/http-response.adoc[]
+include::{snippets}/tag-duplication-check/response-fields.adoc[]

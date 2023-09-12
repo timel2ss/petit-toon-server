@@ -1,0 +1,99 @@
+[[toon-create]]
+=== 웹툰 등록
+
+==== HTTP Request
+
+include::{snippets}/toon-create/curl-request.adoc[]
+include::{snippets}/toon-create/request-parts.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-create/http-response.adoc[]
+include::{snippets}/toon-create/response-fields.adoc[]
+
+[[toon-delete]]
+=== 웹툰 삭제
+
+==== HTTP Request
+
+include::{snippets}/toon-delete/http-request.adoc[]
+include::{snippets}/toon-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-delete/http-response.adoc[]
+
+[[toon-get]]
+=== 웹툰 정보 조회
+
+==== HTTP Request
+
+include::{snippets}/toon-get/http-request.adoc[]
+include::{snippets}/toon-get/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-get/http-response.adoc[]
+include::{snippets}/toon-get/response-fields.adoc[]
+
+[[toon-get-user]]
+=== 유저가 등록한 웹툰 리스트 조회
+
+==== HTTP Request
+
+include::{snippets}/toon-get-user/http-request.adoc[]
+include::{snippets}/toon-get-user/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-get-user/http-response.adoc[]
+include::{snippets}/toon-get-user/response-fields.adoc[]
+
+[[toon-view]]
+=== 웹툰 조회수 상승
+
+==== HTTP Request
+
+include::{snippets}/toon-view/http-request.adoc[]
+include::{snippets}/toon-view/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-view/http-response.adoc[]
+
+[[toon-update]]
+=== 웹툰 정보 변경
+
+==== HTTP Request
+
+include::{snippets}/toon-update/http-request.adoc[]
+include::{snippets}/toon-update/path-parameters.adoc[]
+include::{snippets}/toon-update/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-update/http-response.adoc[]
+
+[[toon-insertImage]]
+=== 이미지 삽입
+
+==== HTTP Request
+
+include::{snippets}/toon-insertImage/curl-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-insertImage/http-response.adoc[]
+include::{snippets}/toon-insertImage/response-fields.adoc[]
+
+[[toon-removeImage]]
+=== 이미지 삭제
+
+==== HTTP Request
+
+include::{snippets}/toon-removeImage/http-request.adoc[]
+include::{snippets}/toon-removeImage/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-removeImage/http-response.adoc[]

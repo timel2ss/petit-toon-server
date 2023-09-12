@@ -1,0 +1,73 @@
+ifndef::snippets[]
+:snippets: ../../../../../build/generated-snippets
+endif::[]
+= Petit Toon Server REST API Documents
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Follow-API]]
+== Follow API
+
+include::api/user/follow.adoc[]
+
+[[Toon-API]]
+== Toon API
+
+include::api/cartoon/toon.adoc[]
+
+[[Search-API]]
+== Search API
+
+include::api/search/search.adoc[]
+
+[[Collection-API]]
+== Collection API
+include::api/collection/collection.adoc[]
+
+== Bookmark API
+include::api/collection/bookmark.adoc[]
+
+[[Like-API]]
+== Like API
+
+include::api/cartoon/like.adoc[]
+
+[[Comment-API]]
+== Comment API
+
+include::api/cartoon/comment.adoc[]
+
+
+[[Auth-API]]
+== Authentication API
+
+include::api/user/auth.adoc[]
+
+[[User-API]]
+== User API
+
+include::api/user/user.adoc[]
+
+[[Profile-API]]
+== Profile API
+
+include::api/user/profile.adoc[]
+
+[[Rank-API]]
+== Rank API
+
+include::api/rank/rank.adoc[]
+
+[[Feed-API]]
+== Feed API
+
+include::api/feed/feed.adoc[]
+
+[[Exception-API]]
+== Exception API
+
+include::api/exception/exception.adoc[]

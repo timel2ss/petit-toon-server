@@ -1,0 +1,88 @@
+POST http://localhost:8080/api/v1/toon
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: {{accessToken}}
+
+--boundary
+Content-Disposition: form-data; name="toonImages"; filename="sample1.png"
+
+< ../src/test/resources/sample-toons/sample1.png
+
+--boundary
+Content-Disposition: form-data; name="toonImages"; filename="sample2.png"
+
+< ../src/test/resources/sample-toons/sample2.png
+
+--boundary
+Content-Disposition: form-data; name="title";
+Content-Type: text/plain
+
+sample-title
+
+--boundary
+Content-Disposition: form-data; name="description";
+Content-Type: text/plain
+
+sample-description
+--boundary
+
+
+###
+
+POST localhost:8080/api/v1/toon
+Content-Type: multipart/form-data; boundary=boundary2
+Authorization: {{accessToken}}
+
+--boundary2
+Content-Disposition: form-data; name="toonImages"; filename="sample1.png"
+
+< ../src/test/resources/sample-toons/sample1.png
+
+--boundary2
+Content-Disposition: form-data; name="toonImages"; filename="sample2.png"
+
+< ../src/test/resources/sample-toons/sample2.png
+
+--boundary2
+Content-Disposition: form-data; name="title";
+Content-Type: text/plain
+
+sample-title
+
+--boundary2
+Content-Disposition: form-data; name="description";
+Content-Type: text/plain
+
+sample-description
+--boundary2
+
+
+###
+
+DELETE localhost:8080/api/v1/toon/1
+Authorization: {{accessToken}}
+
+
+###
+
+DELETE localhost:8080/api/v1/toon/2
+Authorization: {{accessToken}}
+
+###
+
+GET localhost:8080/api/v1/toon/1
+Authorization: {{accessToken}}
+
+###
+
+POST localhost:8080/api/v1/toon/1/view
+Authorization: {{accessToken}}
+
+###
+PATCH localhost:8080/api/v1/toon/2
+Content-Type: application/json
+Content-Encoding: UTF-8
+Authorization: {{accessToken}}
+
+{
+  "title": "김영현의 모험"
+}

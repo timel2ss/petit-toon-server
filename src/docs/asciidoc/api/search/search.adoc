@@ -1,0 +1,29 @@
+[[search-user]]
+=== 유저 검색
+
+==== HTTP Request
+
+keyword: "김영현"
+
+include::{snippets}/search-user/http-request.adoc[]
+include::{snippets}/search-user/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-user/http-response.adoc[]
+include::{snippets}/search-user/response-fields.adoc[]
+
+[[search-cartoon]]
+=== 웹툰 검색
+
+==== HTTP Request
+
+keyword: "김영현"
+
+include::{snippets}/search-cartoon/http-request.adoc[]
+include::{snippets}/search-cartoon/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-cartoon/http-response.adoc[]
+include::{snippets}/search-cartoon/response-fields.adoc[]
