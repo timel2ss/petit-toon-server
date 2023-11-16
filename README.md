@@ -19,7 +19,7 @@ Short WebToon Platform API Server (2023.07 ~ 2023.09)
 ![ER-diagram](docs/ER-diagram.png)
 
 ## 📄 API Documents
-documents url
+[API Documents](https://timel2ss.github.io/petit-toon-server/)
 
 ## ✔ 기여한 사항
 - 엔티티 설계
@@ -27,7 +27,7 @@ documents url
 - 회원가입, 로그인
 - 서비스 배포 (GCP - Compute Engine)
 
-## Issues
+## 📋 Issues
 <details>
 <summary>좋아요 버튼을 누를 때마다 DB에 쿼리 요청되는 문제</summary>
 
