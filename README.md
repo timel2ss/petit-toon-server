@@ -53,7 +53,7 @@ Short WebToon Platform API Server (2023.07 ~ 2023.09)
   - none 옵션을 사용하려면 https를 사용해야 Cookie가 전달됨
   - Lax 옵션에서는 서트 파티쿠키가 전송되지 않음
     - SameSite가 아니면 Cookie가 전달되지 않음
-    - React 코드를 빌드한 html을 Spring Boot에서 배포하여 해결
+    - API 서버를 서브 도메인으로 추가하여 도메인 주소를 맞춰주어 해결
   - [CookieUtil: Cookie 설정](https://github.com/timel2ss/petit-toon-server/blob/master/src/main/java/com/petit/toon/util/CookieUtil.java)
 </details>
 
